@@ -50,54 +50,25 @@ public class SoftwareUninstall extends Activity implements  Runnable {
 	
 	String ownName = "AppManage";
 	
-	//������Ҫ�������İ汾�ţ���������ı�������ں�̨�����һ��	
-	//������Ҫ���ˣ�������Ϊnull
-	private String airpushversion="4.0";
-	//������Ҫ�������������ţ���������ı���Ͷ��������淶.xls�е�������һ��
-	//������Ҫ���ˣ�������Ϊnull
-	private String airpushchannelid="Airpush-goapk";  
-	//��վ�������appkey 
-	//����appkey="d4f59fd406e9898d2d69fecb86c2783e"
-	private String appkey = "8730f506073a8b23a9e77e2cb5c08148";
-
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {  
         super.onCreate(savedInstanceState);  
 		setContentView(R.layout.software_uninstall);	//���ò����ļ�
 		
-		//�ڶ��ַ�ʽ��
-		com.dou.main.PushAdsManager.getInit().receivePushMessage (SoftwareUninstall.this,appkey,airpushversion,airpushchannelid,true,true);
-//		appKey,�Ƿ��һ�δ��ƶ���true�򿪣����Ƿ�򿪺�̨���ͣ�true�򿪣���������һ����Ϊtrue
-
-		
 		Log.i("SoftwareUninstall", "onCreate");			//��ʾ��־��Ϣ
-		setTitle("�����Ϣ");	//���ñ���
+		
+//		setTitle();	//���ñ���
+		setTitle(R.string.title);
 		findViews();		//�ҵ���Ӧ�ؼ�
 		setListeners();		//���ü�����
-        pd = ProgressDialog.show(this, "���Ժ�..", "�����ռ����Ѿ���װ�������Ϣ...", true,
+        pd = ProgressDialog.show(this, getString(R.string.pd_title),
+        		getString(R.string.pd_message), true,
                 false);		//��ʾ��ȶԻ���
         Thread thread = new Thread(this);	//����һ���µ��߳�
         thread.start();		//�����߳�
         
     }  
 	
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		menu.add(0, 0, 0, "����");
-//		return true;
-//		
-//	}
-
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
-//	    switch(item.getItemId()) {
-//	    case 0:
-//	    	AppConnect.getInstance(this).showFeedback();
-//	        return true;
-//	    default:
-//	        return super.onOptionsItemSelected(item);
-//	    }
-//	}
 	
 	@Override
 	protected void onDestroy() {
@@ -183,12 +154,7 @@ public class SoftwareUninstall extends Activity implements  Runnable {
 				return false;
 			}
 		});
-		
-		/*************************************************/
-//		notes.notifyDataSetChanged();	//��ݸı�����
-		/*************************************************/
-		
-		setTitle("�����Ϣ,�Ѿ���װ"+list.size()+"��Ӧ��.");	//���ñ���
+		setTitle(getString(R.string.total_installed) + list.size());	//���ñ���
 	}
 	
 	//�Զ��庯�����Ѱ�װ�������Ϣ
@@ -208,12 +174,9 @@ public class SoftwareUninstall extends Activity implements  Runnable {
                 label = getPackageManager().getApplicationLabel(app).toString();	//��ó���ı�ǩ����ת��Ϊ�ַ�
                 icon = getPackageManager().getApplicationIcon(app);	//��ó����ͼ��
                 
-//              icon = app.loadIcon(getPackageManager());	//�˷���Ҳ���Ի��ͼ��
-                
             } catch (Exception e) {  
             	Log.i("Exception",e.toString());
             }
-//            Log.i("�����Ϣ", label);	//��ʾ��������
             
             if(0 == (app.flags  & ApplicationInfo.FLAG_SYSTEM) && !label.equals(ownName)) {	//ֻ����ϵͳӦ�ü���listview
             	//���⻹����ͨ�����·�������ϵͳ���
@@ -260,9 +223,9 @@ public class SoftwareUninstall extends Activity implements  Runnable {
         		Log.i("itemDesc", desc.getText().toString());
 	
         		new AlertDialog.Builder(SoftwareUninstall.this)
-        		.setTitle("���ж��")
-        		.setMessage("ȷ��Ҫж�س���")
-        		.setPositiveButton("ȷ��", new OnClickListener() {
+        		.setTitle(R.string.alertdialog_title)
+        		.setMessage(R.string.alertdialog_message)
+        		.setPositiveButton(R.string.positive, new OnClickListener() {
     				public void onClick(DialogInterface arg0, int arg1) {
     					Intent uninstall = new Intent(Intent.ACTION_DELETE);		//�½�һ��Intentʵ������ж�����
     					uninstall.setAction("android.intent.action.DELETE");		//����uninstall����Ϊ
@@ -272,7 +235,7 @@ public class SoftwareUninstall extends Activity implements  Runnable {
     					startActivity(uninstall);
     				}
     			})
-    			.setNegativeButton("ȡ��", new OnClickListener() {
+    			.setNegativeButton(R.string.negative, new OnClickListener() {
     				public void onClick(DialogInterface dialog, int which) {
     					return;
     				}
