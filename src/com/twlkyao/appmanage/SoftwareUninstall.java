@@ -1,8 +1,8 @@
 /**
- * ���ߣ�		����
- * �޸��ߣ�	��ʿ��
- * ���ڣ�		2013.3.10
- * ���ܣ�		�鿴�ֻ��а�װ�����е���Ӧ�ó��򣬷�����в鿴��ж�ء�
+ * @Author 		Shiyao Qi
+ * @Date 		2013.3.10
+ * @Function 	Display all the Apps installed on your device, one click to uninstall,
+ * 				convenient for managing Apps on your device.
  */
 
 package com.twlkyao.appmanage;
@@ -41,40 +41,39 @@ import android.widget.TextView;
 @SuppressLint("HandlerLeak")
 public class SoftwareUninstall extends Activity implements  Runnable {
 	
-	private SimpleAdapter notes;			//SimpleAdapterʵ��
+	private SimpleAdapter notes;
 	private List<Map<String, Object>> list = null;
-	private ListView listview = null;		//ListView����
-	private ProgressDialog pd;				//��ȶԻ���
-	private TextView name;					//���ڴ洢listview�еĳ�����
-	private TextView desc;					//���ڴ洢listview�еĳ����������
+	private ListView listview = null;
+	private ProgressDialog pd;
+	private TextView name;
+	private TextView desc;
 	
 	String ownName = "AppManage";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {  
         super.onCreate(savedInstanceState);  
-		setContentView(R.layout.software_uninstall);	//���ò����ļ�
+		setContentView(R.layout.software_uninstall);
 		
-		Log.i("SoftwareUninstall", "onCreate");			//��ʾ��־��Ϣ
+		Log.i("SoftwareUninstall", "onCreate");
 		
-//		setTitle();	//���ñ���
 		setTitle(R.string.title);
-		findViews();		//�ҵ���Ӧ�ؼ�
-		setListeners();		//���ü�����
+		
+		findViews();
+		setListeners();
         pd = ProgressDialog.show(this, getString(R.string.pd_title),
         		getString(R.string.pd_message), true,
-                false);		//��ʾ��ȶԻ���
-        Thread thread = new Thread(this);	//����һ���µ��߳�
-        thread.start();		//�����߳�
-        
-    }  
+                false);
+        Thread thread = new Thread(this);
+        thread.start();
+    }
 	
 	
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		Log.i("SoftwareUninstall","onDestroy");	//��ʾ��־��Ϣ
+		Log.i("SoftwareUninstall","onDestroy");
 		
 	}
 
@@ -82,43 +81,41 @@ public class SoftwareUninstall extends Activity implements  Runnable {
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		Log.i("SoftwareUninstall", "onPause");	//��ʾ��־��Ϣ
+		Log.i("SoftwareUninstall", "onPause");
 	}
 
-	//��ΪActivity��ת��ʱ�����onRestart(),onStart(),onResume()���������Կ��������ʵ��ListView�Ķ�̬����
 	@Override
 	protected void onRestart() {
 		// TODO Auto-generated method stub
 		super.onRestart();
-		Log.i("SoftwareUninstall", "onRestart");	//��ʾ��־��Ϣ
-//		refreshListItems();					//����listview��Ϣ
+		Log.i("SoftwareUninstall", "onRestart");
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		Log.i("SoftwareUninstall","onResume");	//��ʾ��־��Ϣ
-		refreshListItems();	//������ʾ�б�
+		Log.i("SoftwareUninstall","onResume");
+		refreshListItems(); // Refresh the ListView.
 	}
 
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		Log.i("SoftwareUninstall", "onStart");	//��ʾ��־��Ϣ
+		Log.i("SoftwareUninstall", "onStart");
 	}
 
 	@Override
 	protected void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
-		Log.i("SoftwareUninstall", "onStop");	//��ʾ��־��Ϣ
+		Log.i("SoftwareUninstall", "onStop");
 	}
 
-	//�Զ��庯�����ڸ���listview
-	private void refreshListItems() {	//����list
-		list = fetch_installed_apps();	//�����Զ��庯���ð�װ������б�
+	// Refresh the ListView.
+	private void refreshListItems() {
+		list = fetch_installed_apps();
 	
 		// Sort the list of application in alphabet order.
 		Collections.sort(list,new Comparator<Map<String, Object>>() {  
@@ -138,87 +135,75 @@ public class SoftwareUninstall extends Activity implements  Runnable {
 		
 		notes = new SimpleAdapter(this, list, R.layout.info_row,
 				new String[] { "icon", "name", "desc" }, new int[] { R.id.icon, R.id.name,
-						R.id.desc });	//�½�һ��Adapter
-		listview.setAdapter(notes);	//����Adapter
+						R.id.desc }); // Instance a new SimpleAdapter.
+		listview.setAdapter(notes); // Set adapter.
 		
-		//ͨ������ķ������Խ���̬��õ�Drawable��Դ��ӵ�ListViewʵ��
-		notes.setViewBinder(new ViewBinder() {	//���ڽ�data�󶨵�view
+		notes.setViewBinder(new ViewBinder() { // To get the App icon dynamically.
 			public boolean setViewValue(View view, Object data,
 					String textRepresentation) {
 				// TODO Auto-generated method stub
 				if(view instanceof ImageView && data instanceof Drawable) {
 					ImageView iv = (ImageView) view;
 					iv.setImageDrawable((Drawable)data);
-					return true;	//data�󶨵�view�ɹ��󷵻�true
+					return true;
 				}
 				return false;
 			}
 		});
-		setTitle(getString(R.string.total_installed) + list.size());	//���ñ���
+		setTitle(getString(R.string.total_installed) + list.size()); // Set title.
 	}
 	
-	//�Զ��庯�����Ѱ�װ�������Ϣ
 	public List<Map<String, Object>> fetch_installed_apps() {
-        List<ApplicationInfo> packages = getPackageManager().getInstalledApplications(0);	//��ð�װ�������Ϣ
+        List<ApplicationInfo> packages = getPackageManager().getInstalledApplications(0);
 		list = new ArrayList<Map<String, Object>>(
-				packages.size());	//�½�һ��size()��С��ArrayList
+				packages.size());
 		Iterator<ApplicationInfo> appInfo = packages.iterator();
 		
 		while (appInfo.hasNext()) {
-			Map<String, Object> map = new HashMap<String, Object>();	//�½�һ��mapʵ��
-			ApplicationInfo app = (ApplicationInfo) appInfo.next();	//������һ�����󣬲��Ҹ���interator
-			String packageName = app.packageName;	//�õ�������������
-            String label = "";		//���ڴ洢���������
-            Drawable icon = null;	//���ڴ洢�����ͼ��
+			Map<String, Object> map = new HashMap<String, Object>();
+			ApplicationInfo app = (ApplicationInfo) appInfo.next();	
+			String packageName = app.packageName;
+            String label = "";
+            Drawable icon = null;
             try {
-                label = getPackageManager().getApplicationLabel(app).toString();	//��ó���ı�ǩ����ת��Ϊ�ַ�
-                icon = getPackageManager().getApplicationIcon(app);	//��ó����ͼ��
-                
+                label = getPackageManager().getApplicationLabel(app).toString();
+                icon = getPackageManager().getApplicationIcon(app);
             } catch (Exception e) {  
             	Log.i("Exception",e.toString());
             }
             
-            if(0 == (app.flags  & ApplicationInfo.FLAG_SYSTEM) && !label.equals(ownName)) {	//ֻ����ϵͳӦ�ü���listview
-            	//���⻹����ͨ�����·�������ϵͳ���
-            	/*
-            	 * packageInfo.versionName == null
-            	 * */
+            if(0 == (app.flags  & ApplicationInfo.FLAG_SYSTEM) && !label.equals(ownName)) { // Exclude the app itself.
             	
-            	map.put("icon", icon);	//��map�����Ӧ�ó����ͼ��
-           		map.put("name", label);	//��map�����Ӧ�ó��������
-          		map.put("desc", packageName);	//��map��������
-          		list.add(map);	//��list��������
+            	map.put("icon", icon); // Put icon key-vale.
+           		map.put("name", label); // Put name key-value.
+          		map.put("desc", packageName); // Put desc key-value.
+          		list.add(map);
             }
 		}
-		return list;	//����list
+		return list;
     }
 	
-	//ʵ��run()����
 	public void run() {
-		fetch_installed_apps();	//��ð�װ�������Ϣ
+		fetch_installed_apps();
 		handler.sendEmptyMessage(0);
 	}
 	
-	//
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-            refreshListItems();	//����list
-            pd.dismiss();	//����ȶԻ���
+            refreshListItems();
+            pd.dismiss();
         }
     };
     
-    //�ҵ���Ӧ�ؼ�
 	public void findViews() {
-    	listview = (ListView) findViewById(R.id.softwareUninstall);	//�ҵ���Ӧ�Ŀؼ�
+    	listview = (ListView) findViewById(R.id.softwareUninstall);	
     }
     
-    //���ü�����
     public void setListeners() {
-    	//ʵ����Ŀ���������
     	listview.setOnItemClickListener(new OnItemClickListener() {
     		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     			name = (TextView) view.findViewById(R.id.name);
-    			desc = (TextView) view.findViewById(R.id.desc);	//��ȡ�����Ŀ����������ã�����������ȡ�����Ҫ��Ȩ�޺��ṩж��ѡ��
+    			desc = (TextView) view.findViewById(R.id.desc);
         		Log.i("itemName", name.getText().toString());
         		Log.i("itemDesc", desc.getText().toString());
 	
@@ -227,10 +212,10 @@ public class SoftwareUninstall extends Activity implements  Runnable {
         		.setMessage(R.string.alertdialog_message)
         		.setPositiveButton(R.string.positive, new OnClickListener() {
     				public void onClick(DialogInterface arg0, int arg1) {
-    					Intent uninstall = new Intent(Intent.ACTION_DELETE);		//�½�һ��Intentʵ������ж�����
-    					uninstall.setAction("android.intent.action.DELETE");		//����uninstall����Ϊ
-    					uninstall.addCategory("android.intent.category.DEFAULT");	//
-    					Uri packageName = Uri.parse("package:" + desc.getText().toString());		//�õ�Ӧ����������������ǰ��Ҫ����"package:"ǰ׺��Ȼ�󴫵ݸ�Intentʵ��
+    					Intent uninstall = new Intent(Intent.ACTION_DELETE);
+    					uninstall.setAction("android.intent.action.DELETE");
+    					uninstall.addCategory("android.intent.category.DEFAULT");
+    					Uri packageName = Uri.parse("package:" + desc.getText().toString());
     					uninstall.setData(packageName);
     					startActivity(uninstall);
     				}
@@ -241,7 +226,6 @@ public class SoftwareUninstall extends Activity implements  Runnable {
     				}
     			}).show();
         	}
-    	});	//���ü�����
-    	
+    	});
     }
 }
