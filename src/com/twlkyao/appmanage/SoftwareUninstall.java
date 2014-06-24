@@ -57,13 +57,16 @@ public class SoftwareUninstall extends Activity implements  Runnable {
 		
 		Log.i("SoftwareUninstall", "onCreate");
 		
+		// cancelable progress dialog. 
+		pd = ProgressDialog.show(this, getString(R.string.pd_title),
+				getString(R.string.pd_message), true,
+				true);
+		
 		setTitle(R.string.title);
 		
 		findViews();
 		setListeners();
-        pd = ProgressDialog.show(this, getString(R.string.pd_title),
-        		getString(R.string.pd_message), true,
-                false);
+        
         Thread thread = new Thread(this);
         thread.start();
     }
@@ -118,7 +121,7 @@ public class SoftwareUninstall extends Activity implements  Runnable {
 		list = fetch_installed_apps();
 	
 		// Sort the list of application in alphabet order.
-		Collections.sort(list,new Comparator<Map<String, Object>>() {  
+		Collections.sort(list, new Comparator<Map<String, Object>>() {
 
 			public int compare(Map<String, Object> map1,Map<String, Object> map2) {  
 
